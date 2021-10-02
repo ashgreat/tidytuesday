@@ -1,0 +1,75 @@
+---
+title: "Untitled"
+author: "Ashwin Malshe"
+date: "10/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+papers <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/papers.csv')
+authors <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/authors.csv')
+programs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/programs.csv')
+paper_authors <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/paper_authors.csv')
+paper_programs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/paper_programs.csv')
+
+```
+
+
+```{r}
+head(authors)
+```
+
+```{r}
+tail(authors)
+```
+
+Use `papers` data set to create dataviz
+
+```{r}
+papers %>% 
+  ggplot(aes(x = year)) +
+  geom_bar()
+```
+
+```{r}
+year_count <- papers %>% 
+  count(year)
+```
+
+```{r}
+year_count
+```
+
+```{r}
+papers %>% 
+  count(year) %>% 
+  ggplot(aes(x = year, y = n)) +
+  geom_line()
+```
+
+```{r}
+papers %>% 
+  count(year, month) %>% 
+  mutate(date = as.Date(paste(year, month, "01", sep = "-"))) %>% 
+  ggplot(aes(x = date, y = n)) +
+  geom_line()
+```
+
+
+```{r}
+papers %>% 
+  count(month)
+```
+
+```{r}
+papers %>% 
+  count(month) %>% 
+  ggplot(aes(x = month, y = n)) +
+  geom_bar(stat = "identity")
+```
+
