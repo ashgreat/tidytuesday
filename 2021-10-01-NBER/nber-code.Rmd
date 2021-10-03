@@ -17,60 +17,79 @@ programs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/t
 paper_authors <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/paper_authors.csv')
 paper_programs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-28/paper_programs.csv')
 
+theme_set(ggthemes::theme_fivethirtyeight())
+
 ```
 
+## Visualization of monthly NBER paper submission
 
-
-```{r}
-head(authors)
-```
-
-```{r}
-tail(authors)
-```
-
-Use `papers` data set to create dataviz
-
-```{r}
-papers %>% 
-  ggplot(aes(x = year)) +
-  geom_bar()
-```
-
-```{r}
-year_count <- papers %>% 
-  count(year)
-```
-
-```{r}
-year_count
-```
-
-```{r}
-papers %>% 
-  count(year) %>% 
-  ggplot(aes(x = year, y = n)) +
-  geom_line()
-```
+Anecdotally I had heard that many economists were submitting tons of papers to NBER during the Covid-19 pandemic. However, it was not clear to me whether this was a trend or a flash in the pan. The following visualization show that the spike in 2020 was primarily in one month. 
 
 ```{r}
 papers %>% 
   count(year, month) %>% 
   mutate(date = as.Date(paste(year, month, "01", sep = "-"))) %>% 
   ggplot(aes(x = date, y = n)) +
-  geom_line()
+  geom_line() 
+  
 ```
 
+Which month saw the spike? This table shows that it was in May 2020. Top 6 months with highest submissions are in 2020.
 
 ```{r}
 papers %>% 
-  count(month)
+  count(year, month, sort = TRUE) %>% 
+  head(10)
 ```
+
+Let's annotate the earlier plot with the spike in may 2020.
 
 ```{r}
 papers %>% 
-  count(month) %>% 
-  ggplot(aes(x = month, y = n)) +
-  geom_bar(stat = "identity")
+  count(year, month) %>% 
+  mutate(date = as.Date(paste(year, month, "01", sep = "-"))) %>% 
+  ggplot(aes(x = date, y = n)) +
+  geom_line() +
+  annotate(geom = "text", x = as.Date("2015-01-01"), y = 223, 
+           label = "May 2020 had \n223 submissions", color = "#b131a2", fontface = "italic")
 ```
 
+## Sub-areas of Economics submitting in May 2020
+
+Next, let's visualize the top subcategories submitting in May 2020. I expected these to be from Heath Care and Heath Economics. But is that the case?
+
+
+```{r}
+top_10_may_2020 <- papers %>% 
+  left_join(paper_programs, by = "paper") %>% 
+  left_join(programs, by = "program") %>% 
+  filter(year == 2020 & month == 5) %>% 
+  count(program_desc, sort = TRUE) %>% 
+  head(10)
+```
+
+```{r}
+top_10_may_2020
+```
+
+
+
+```{r}
+top_10_may_2020 %>% 
+  ggplot(aes(x = reorder(program_desc, n), y = n )) +
+  geom_col() +
+  coord_flip()
+  
+```
+
+Let's fill the first 3 bars with a different color. 
+
+
+```{r}
+top_10_may_2020 %>% 
+  mutate(top3 = ifelse(n >= 56, 1, 0)) %>% 
+  ggplot(aes(x = reorder(program_desc, n), y = n )) +
+  geom_col(aes(fill = top3), show.legend = FALSE) +
+  coord_flip()
+  
+```
