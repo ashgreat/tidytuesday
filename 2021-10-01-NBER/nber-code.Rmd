@@ -22,7 +22,7 @@ theme_set(ggthemes::theme_fivethirtyeight())
 
 ```
 
-## Visualization of monthly NBER paper submission
+## Visualization of monthly NBER paper submissions
 
 Anecdotally I had heard that many economists were submitting tons of papers to NBER during the Covid-19 pandemic. However, it was not clear to me whether this was a trend or a flash in the pan. The following visualization show that the spike in 2020 was primarily in one month. 
 
