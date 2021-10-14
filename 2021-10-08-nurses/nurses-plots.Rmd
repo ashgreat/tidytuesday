@@ -1,0 +1,106 @@
+---
+title: "Nurses dataset"
+author: "Ashwin Malshe"
+date: "10/8/2021"
+output:
+  md_document:
+    variant: markdown_github
+---
+install.packages("janitor")
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(tidyverse, geofacet)
+```
+
+
+```{r}
+nurses <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-10-05/nurses.csv') %>% 
+  janitor::clean_names()
+```
+
+```{r}
+nurses %>% 
+  count(year)
+```
+
+```{r}
+nurses %>% 
+  count(state)
+```
+
+
+
+```{r}
+names(nurses)
+```
+
+```{r}
+nurses %>% 
+  filter(state == "Texas") %>% 
+  ggplot(aes(x = year)) +
+  geom_line(aes(y = annual_salary_median), color = "red") +
+  geom_line(aes(y = annual_90th_percentile), color = "blue") +
+  geom_line(aes(y = annual_10th_percentile), color = "green") +
+  theme_minimal()
+```
+
+```{r}
+nurses %>% 
+  filter(state == "Texas") %>% 
+  select(year, annual_salary_median, annual_90th_percentile, annual_10th_percentile) %>% 
+  tidyr::pivot_longer(
+    cols = c(annual_salary_median, annual_90th_percentile, annual_10th_percentile),
+    names_to = "annual_salary_band",
+    values_to = "amount") %>% 
+  mutate(annual_salary_band = factor(annual_salary_band,
+                                     levels = c("annual_90th_percentile",
+                                                "annual_salary_median",
+                                                "annual_10th_percentile"))) %>% 
+  ggplot(aes(x = year, y = amount, color = annual_salary_band)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::dollar) +
+  theme_minimal()
+```
+
+
+## Create a geofacet
+
+Let's first create a data set for making the geo facet plot
+
+```{r}
+
+nurses_geo <- nurses %>% 
+  filter(!state %in% c("Guam", "Puerto Rico", "Virgin Islands")) %>% 
+  select(year, state, annual_salary_median, annual_90th_percentile, annual_10th_percentile) %>% 
+  tidyr::pivot_longer(
+    cols = c(annual_salary_median, annual_90th_percentile, annual_10th_percentile),
+    names_to = "annual_salary_band",
+    values_to = "amount") %>% 
+  mutate(annual_salary_band = factor(annual_salary_band,
+                                     levels = c("annual_90th_percentile",
+                                                "annual_salary_median",
+                                                "annual_10th_percentile")))
+
+```
+
+Print out and see how this data set looks:
+
+```{r}
+head(nurses_geo)
+```
+
+```{r}
+ggplot(nurses_geo, aes(x = year, y = amount, color = annual_salary_band)) +
+  geom_line() +
+  facet_geo(~ state) +
+  theme_minimal() +
+  labs(x = NULL, y = NULL, color = NULL) +
+  scale_color_manual(values = c("#6638f0", "#b131a2", "#5cc9f5"), labels = c("90th Percentile", "Median", "10th Percentile")) +
+  scale_y_continuous(labels = scales::dollar) +
+  scale_x_continuous(breaks = c(2000, 2010, 2020), labels = c("'00", "'10", "'20")) +
+  theme(legend.position = "top")
+```
+
+
+
