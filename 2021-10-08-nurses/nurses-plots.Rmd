@@ -96,9 +96,11 @@ ggplot(nurses_geo, aes(x = year, y = amount, color = annual_salary_band)) +
   facet_geo(~ state) +
   theme_minimal() +
   labs(x = NULL, y = NULL, color = NULL) +
-  scale_color_manual(values = c("#6638f0", "#b131a2", "#5cc9f5"), labels = c("90th Percentile", "Median", "10th Percentile")) +
+  scale_color_manual(values = c("#6638f0", "#b131a2", "#5cc9f5"), 
+                     labels = c("90th Percentile", "Median", "10th Percentile")) +
   scale_y_continuous(labels = scales::dollar) +
-  scale_x_continuous(breaks = c(2000, 2010, 2020), labels = c("'00", "'10", "'20")) +
+  scale_x_continuous(breaks = c(2000, 2010, 2020), 
+                     labels = c("'00", "'10", "'20")) +
   theme(legend.position = "top")
 ```
 
