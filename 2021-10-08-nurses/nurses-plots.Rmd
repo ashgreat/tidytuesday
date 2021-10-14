@@ -90,7 +90,7 @@ Print out and see how this data set looks:
 head(nurses_geo)
 ```
 
-```{r}
+```{r fig.dim = c(9, 7)}
 ggplot(nurses_geo, aes(x = year, y = amount, color = annual_salary_band)) +
   geom_line() +
   facet_geo(~ state) +
