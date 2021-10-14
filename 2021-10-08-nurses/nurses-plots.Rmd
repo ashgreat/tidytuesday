@@ -101,8 +101,15 @@ ggplot(nurses_geo, aes(x = year, y = amount, color = annual_salary_band)) +
   scale_y_continuous(labels = scales::dollar) +
   scale_x_continuous(breaks = c(2000, 2010, 2020), 
                      labels = c("'00", "'10", "'20")) +
-  theme(legend.position = "top")
+  ggthemes::theme_fivethirtyeight() +
+  theme(strip.text = element_text(size = 7),
+        axis.text = element_text(size = 7))
 ```
 
+I saved this picture for future use.
+```{r eval=FALSE}
+ggsave(here::here("2021-10-08-nurses", "geo_facet.png"), 
+       width = 10, height = 6, dpi = 600)
+```
 
 
